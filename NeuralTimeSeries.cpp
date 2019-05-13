@@ -1,4 +1,6 @@
-﻿#include <iostream>
+﻿// https://msdn.microsoft.com/magazine/mt826350
+
+#include <iostream>
 
 #include <vector>
 
@@ -9,8 +11,8 @@ using std::cout;
 
 namespace NeuralTimeSeries
 {
-  class NeuralTimeSeriesProgram
-  {
+  //class NeuralTimeSeriesProgram
+  //{
 
     static vector<vector<double>> Normalize(const vector<vector<double>>& data)
     {
@@ -251,7 +253,7 @@ namespace NeuralTimeSeries
     }
 
 
-  }; // Program
+  //}; // Program
 
   class NeuralNetwork
   {
@@ -389,10 +391,12 @@ namespace NeuralTimeSeries
         oSums[i] += oBiases[i];
 
       //Array.Copy(oSums, this->oNodes, oSums.size());  // really only 1 value
+      std::copy(oSums.begin(), oSums.end(), oNodes.begin());
 
-      double[] retResult = new double[numOutput]; // could define a GetOutputs 
-      Array.Copy(this->oNodes, retResult, retResult.size());
-      return retResult;
+      //double[] retResult = new double[numOutput]; // could define a GetOutputs 
+      //Array.Copy(this->oNodes, retResult, retResult.size());
+      //return retResult;
+      return { this->oNodes.begin(), this->oNodes.begin() + numOutput };
     }
 
     private:
@@ -400,14 +404,14 @@ namespace NeuralTimeSeries
     {
       if (x < -20.0) return -1.0; // approximation is correct to 30 decimals
       else if (x > 20.0) return 1.0;
-      else return Math.Tanh(x);
+      else return tanh(x);
     }
 
     static double LogSig(double x)
     {
       if (x < -20.0) return 0.0; // approximation
       else if (x > 20.0) return 1.0;
-      else return 1.0 / (1.0 + Math.Exp(x));
+      else return 1.0 / (1.0 + exp(x));
     }
 
     public:
@@ -443,16 +447,18 @@ namespace NeuralTimeSeries
         if (epoch % errInterval == 0 && epoch < maxEpochs)
         {
           double trainErr = Error(trainData);
-          Console.WriteLine("epoch = " + epoch + "  error = " +
-            trainErr.ToString("F4"));
+          //Console.WriteLine("epoch = " + epoch + "  error = " + trainErr.ToString("F4"));
+          cout << "epoch = " << epoch << "  error = " << trainErr << '\n';
         }
 
         Shuffle(sequence); // visit each training data in random order
         for (int ii = 0; ii < trainData.size(); ++ii)
         {
           int idx = sequence[ii];
-          Array.Copy(trainData[idx], xValues, numInput);
-          Array.Copy(trainData[idx], numInput, tValues, 0, numOutput);
+          //Array.Copy(trainData[idx], xValues, numInput);
+          std::copy(trainData[idx].begin(), trainData[idx].begin() + numInput, xValues.begin());
+          //Array.Copy(trainData[idx], numInput, tValues, 0, numOutput);
+          std::copy(trainData[idx].begin() + numInput, trainData[idx].begin() + numInput + numOutput, tValues.begin());
           ComputeOutputs(xValues); // copy xValues in, compute outputs 
 
           // indices: i = inputs, j = hiddens, k = outputs
@@ -541,9 +547,12 @@ namespace NeuralTimeSeries
     private:
         void Shuffle(vector<int>& sequence) // instance method
     {
+      std::default_random_engine dre;
       for (int i = 0; i < sequence.size(); ++i)
       {
-        int r = this->rnd.Next(i, sequence.size());
+        std::uniform_int_distribution<int> di(i, sequence.size() - 1);
+        //int r = this->rnd.Next(i, sequence.size());
+        const int r = di(dre);
         int tmp = sequence[r];
         sequence[r] = sequence[i];
         sequence[i] = tmp;
@@ -561,8 +570,10 @@ namespace NeuralTimeSeries
       // walk thru each training case. looks like (6.9 3.2 5.7 2.3) (0 0 1)
       for (int i = 0; i < trainData.size(); ++i)
       {
-        Array.Copy(trainData[i], xValues, numInput);
-        Array.Copy(trainData[i], numInput, tValues, 0, numOutput); // get target values
+        //Array.Copy(trainData[i], xValues, numInput);
+        std::copy(trainData[i].begin(), trainData[i].begin() + numInput, xValues.begin());
+        //Array.Copy(trainData[i], numInput, tValues, 0, numOutput); // get target values
+        std::copy(trainData[i].begin() + numInput, trainData[i].begin() + numInput + numOutput, tValues.begin());
         vector<double> yValues = ComputeOutputs(xValues); // outputs using current weights
         for (int j = 0; j < numOutput; ++j)
         {
@@ -584,11 +595,13 @@ namespace NeuralTimeSeries
 
       for (int i = 0; i < testData.size(); ++i)
       {
-        Array.Copy(testData[i], xValues, numInput); // get x-values
-        Array.Copy(testData[i], numInput, tValues, 0, numOutput); // get t-values
+        //Array.Copy(testData[i], xValues, numInput); // get x-values
+        std::copy(testData[i].begin(), testData[i].begin() + numInput, xValues.begin());
+        //Array.Copy(testData[i], numInput, tValues, 0, numOutput); // get t-values
+        std::copy(testData[i].begin() + numInput, testData[i].begin() + numInput + numOutput, tValues.begin());
         auto yValues = ComputeOutputs(xValues);
 
-        if (Math.Abs(yValues[0] - tValues[0]) < howClose)  // within 30
+        if (fabs(yValues[0] - tValues[0]) < howClose)  // within 30
           ++numCorrect;
         else
           ++numWrong;
@@ -605,13 +618,16 @@ int main()
 {
     using namespace NeuralTimeSeries;
 
-    Console.WriteLine("\nBegin neural network times series demo");
-    Console.WriteLine("Goal is to predict airline passengers over time ");
-    Console.WriteLine("Data from January 1949 to December 1960 \n");
+    try
+    {
 
-    double[][] trainData = GetAirlineData();
+    cout << "\nBegin neural network times series demo\n"
+        << "Goal is to predict airline passengers over time\n"
+        << "Data from January 1949 to December 1960 \n\n";
+
+    auto trainData = GetAirlineData();
     trainData = Normalize(trainData);
-    Console.WriteLine("Normalized training data:");
+    cout << "Normalized training data:\n";
     ShowMatrix(trainData, 5, 2, true);  // first 5 rows, 2 decimals, show indices
 
     int numInput = 4; // number predictors
@@ -624,23 +640,22 @@ int main()
 
     int maxEpochs = 10000;
     double learnRate = 0.01;
-    Console.WriteLine("\nSetting maxEpochs = " + maxEpochs);
-    Console.WriteLine("Setting learnRate = " + learnRate.ToString("F2"));
+    cout << "\nSetting maxEpochs = " << maxEpochs << '\n';
+    cout << "Setting learnRate = " << learnRate << '\n';
 
-    Console.WriteLine("\nStarting training");
-    double[] weights = nn.Train(trainData, maxEpochs, learnRate);
-    Console.WriteLine("Done");
-    Console.WriteLine("\nFinal neural network model weights and biases:\n");
+    cout << "\nStarting training\n";
+    auto weights = nn.Train(trainData, maxEpochs, learnRate);
+    cout << "Done\n";
+    cout << "\nFinal neural network model weights and biases:\n\n";
     ShowVector(weights, 2, 10, true);
 
     double trainAcc = nn.Accuracy(trainData, 0.30);  // within 30
-    Console.WriteLine("\nModel accuracy (+/- 30) on training data = " +
-        trainAcc.ToString("F4"));
+    cout << "\nModel accuracy (+/- 30) on training data = " << trainAcc << '\n';
 
-    double[] predictors = new double[] { 5.08, 4.61, 3.90, 4.32 };
-    double[] forecast = nn.ComputeOutputs(predictors);  // 4.33362252510741
-    Console.WriteLine("\nPredicted passengers for January 1961 (t=145): ");
-    Console.WriteLine((forecast[0] * 100).ToString("F0"));
+    //double[] predictors = new double[] { 5.08, 4.61, 3.90, 4.32 };
+    auto forecast = nn.ComputeOutputs({ 5.08, 4.61, 3.90, 4.32 });  // 4.33362252510741
+    cout << "\nPredicted passengers for January 1961 (t=145): \n";
+    cout << (forecast[0] * 100) << '\n';
 
     //double[] predictors = new double[] { 4.61, 3.90, 4.32, 4.33362252510741 };
     //double[] forecast = nn.ComputeOutputs(predictors);  // 4.33933519590564
@@ -675,6 +690,12 @@ int main()
     //Console.WriteLine(forecast[0]);
 
 
-    Console.WriteLine("\nEnd time series demo\n");
-    Console.ReadLine();
+    cout << "\nEnd time series demo\n";
+    //Console.ReadLine();
+    }
+    catch (const std::exception& ex)
+    {
+        std::cerr << "Fatal: " << ex.what() << '\n';
+        //Console.ReadLine();
+    }
 } // Main
