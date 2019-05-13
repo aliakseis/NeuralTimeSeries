@@ -272,6 +272,7 @@ namespace NeuralTimeSeries
     vector<double> oNodes;
 
     //Random rnd;
+    std::default_random_engine dre;
 
   public: 
       NeuralNetwork(int numInput, int numHidden, int numOutput)
@@ -311,13 +312,12 @@ namespace NeuralTimeSeries
       void InitializeWeights() // helper for ctor
     {
           std::uniform_real_distribution<double> dis(0, 1);
-          std::default_random_engine re;
       // initialize weights and biases to small random values
       int numWeights = (numInput * numHidden) +
         (numHidden * numOutput) + numHidden + numOutput;
       vector<double> initialWeights(numWeights);
       for (int i = 0; i < initialWeights.size(); ++i)
-        initialWeights[i] = (0.001 - 0.0001) * dis(re) + 0.0001;
+        initialWeights[i] = (0.001 - 0.0001) * dis(dre) + 0.0001;
       this->SetWeights(initialWeights);
     }
 
@@ -547,7 +547,6 @@ namespace NeuralTimeSeries
     private:
         void Shuffle(vector<int>& sequence) // instance method
     {
-      std::default_random_engine dre;
       for (int i = 0; i < sequence.size(); ++i)
       {
         std::uniform_int_distribution<int> di(i, sequence.size() - 1);
