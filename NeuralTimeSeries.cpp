@@ -653,40 +653,55 @@ int main()
 
     //double[] predictors = new double[] { 5.08, 4.61, 3.90, 4.32 };
     auto forecast = nn.ComputeOutputs({ 5.08, 4.61, 3.90, 4.32 });  // 4.33362252510741
-    cout << "\nPredicted passengers for January 1961 (t=145): \n";
-    cout << (forecast[0] * 100) << '\n';
+    cout << "\nPredicted passengers for January 1961 (t=145): " << (forecast[0] * 100) << '\n';
 
     //double[] predictors = new double[] { 4.61, 3.90, 4.32, 4.33362252510741 };
     //double[] forecast = nn.ComputeOutputs(predictors);  // 4.33933519590564
     //Console.WriteLine(forecast[0]);
+    forecast = nn.ComputeOutputs({4.61, 3.90, 4.32, 4.33362252510741});
+    cout << "\nExpected: 4.33933519590564; predicted: " << (forecast[0]) << '\n';
 
     //double[] predictors = new double[] { 3.90, 4.32, 4.33362252510741, 4.33933519590564 };
     //double[] forecast = nn.ComputeOutputs(predictors);  // 4.69036205766231
     //Console.WriteLine(forecast[0]);
+    forecast = nn.ComputeOutputs({ 3.90, 4.32, 4.33362252510741, 4.33933519590564 });
+    cout << "\nExpected: 4.69036205766231; predicted: " << (forecast[0]) << '\n';
 
     //double[] predictors = new double[] { 4.32, 4.33362252510741, 4.33933519590564, 4.69036205766231 };
     //double[] forecast = nn.ComputeOutputs(predictors);  // 4.83360378041341
     //Console.WriteLine(forecast[0]);
+    forecast = nn.ComputeOutputs({ 4.32, 4.33362252510741, 4.33933519590564, 4.69036205766231 });
+    cout << "\nExpected: 4.83360378041341; predicted: " << (forecast[0]) << '\n';
 
     //double[] predictors = new double[] { 4.33362252510741, 4.33933519590564, 4.69036205766231, 4.83360378041341 };
     //double[] forecast = nn.ComputeOutputs(predictors);  // 5.50703476366623
     //Console.WriteLine(forecast[0]);
+    forecast = nn.ComputeOutputs({ 4.33362252510741, 4.33933519590564, 4.69036205766231, 4.83360378041341 });
+    cout << "\nExpected: 5.50703476366623; predicted: " << (forecast[0]) << '\n';
 
     //double[] predictors = new double[] { 4.33933519590564, 4.69036205766231, 4.83360378041341, 5.50703476366623 };
     //double[] forecast = nn.ComputeOutputs(predictors);  // 6.39605763609294
     //Console.WriteLine(forecast[0]);
+    forecast = nn.ComputeOutputs({ 4.33933519590564, 4.69036205766231, 4.83360378041341, 5.50703476366623 });
+    cout << "\nExpected: 6.39605763609294; predicted: " << (forecast[0]) << '\n';
 
     //double[] predictors = new double[] { 4.69036205766231, 4.83360378041341, 5.50703476366623, 6.39605763609294 };
     //double[] forecast = nn.ComputeOutputs(predictors);  // 6.06664881070054
     //Console.WriteLine(forecast[0]);
+    forecast = nn.ComputeOutputs({ 4.69036205766231, 4.83360378041341, 5.50703476366623, 6.39605763609294 });
+    cout << "\nExpected: 6.06664881070054; predicted: " << (forecast[0]) << '\n';
 
     //double[] predictors = new double[] { 4.83360378041341, 5.50703476366623, 6.39605763609294, 6.06664881070054 };
     //double[] forecast = nn.ComputeOutputs(predictors);  // 4.95781531728514
     //Console.WriteLine(forecast[0]);
+    forecast = nn.ComputeOutputs({ 4.83360378041341, 5.50703476366623, 6.39605763609294, 6.06664881070054 });
+    cout << "\nExpected: 4.95781531728514; predicted: " << (forecast[0]) << '\n';
 
     //double[] predictors = new double[] { 5.50703476366623, 6.39605763609294, 6.06664881070054, 4.95781531728514 };
-    //double[] forecast = nn.ComputeOutputs(predictors);  // 4.45837470369601
+    //double[] forecast = nn.ComputeOutputs(predictors);   // 4.45837470369601
     //Console.WriteLine(forecast[0]);
+    forecast = nn.ComputeOutputs({ 5.50703476366623, 6.39605763609294, 6.06664881070054, 4.95781531728514 });
+    cout << "\nExpected: 4.45837470369601; predicted: " << (forecast[0]) << '\n';
 
 
     cout << "\nEnd time series demo\n";
